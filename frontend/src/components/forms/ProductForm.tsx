@@ -12,6 +12,11 @@ const schema = z.object({
     stock: z.number().int().min(0, "Estoque deve ser inteiro >= 0"),
 });
 
+/**
+ * ProductForm component for creating/editing products.
+ * @param {ProductFormProps} props
+ * @returns {JSX.Element}
+ */
 export function ProductForm({ categories, initialValues, onSubmit, onCancel }: ProductFormProps) {
     const {
         register,

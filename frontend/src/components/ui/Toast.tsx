@@ -2,6 +2,14 @@ import { ToastType } from "@/types/ToastType";
 import { useEffect } from "react";
 
 
+/**
+ * Toast component for showing temporary messages.
+ * @param {Object} props
+ * @param {string} props.message
+ * @param {ToastType} props.type
+ * @param {() => void} props.onClose
+ * @returns {JSX.Element}
+ */
 export function Toast({ message, type, onClose }: { message: string; type: ToastType; onClose: () => void }) {
     useEffect(() => {
         const timer = setTimeout(onClose, 2500);

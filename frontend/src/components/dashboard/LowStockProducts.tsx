@@ -2,6 +2,11 @@ import { LowStockProductsProps } from "@/types/LowStockProductsProps";
 import React from "react";
 
 
+/**
+ * LowStockProducts component for listing products with low stock.
+ * @param {LowStockProductsProps} props
+ * @returns {JSX.Element}
+ */
 export function LowStockProducts({ products, categories }: LowStockProductsProps) {
     return (
         <div className="bg-white rounded-xl shadow p-6">

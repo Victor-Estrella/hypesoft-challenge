@@ -2,6 +2,11 @@
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 
+/**
+ * ProductsByCategoryChart component for displaying products grouped by category.
+ * @param {{ products: any[]; categories: any[] }} props
+ * @returns {JSX.Element}
+ */
 export function ProductsByCategoryChart({ products, categories }: { products: any[]; categories: any[] }) {
     // Agrupa produtos por categoria
     const data = categories.map((cat) => ({

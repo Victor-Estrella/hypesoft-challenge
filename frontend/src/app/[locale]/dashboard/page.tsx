@@ -1,7 +1,8 @@
-import { DashboardCards } from "../../components/dashboard/DashboardCards";
-import { ProductsByCategoryChart } from "../../components/dashboard/ProductsByCategoryChart";
-import { LowStockProducts } from "../../components/dashboard/LowStockProducts";
-import { mockProducts, mockCategories } from "../../mocks/mockData";
+import dynamic from "next/dynamic";
+const DashboardCards = dynamic(() => import("../../../components/dashboard/DashboardCards").then(mod => ({ default: mod.DashboardCards })));
+const ProductsByCategoryChart = dynamic(() => import("../../../components/dashboard/ProductsByCategoryChart").then(mod => ({ default: mod.ProductsByCategoryChart })));
+const LowStockProducts = dynamic(() => import("../../../components/dashboard/LowStockProducts").then(mod => ({ default: mod.LowStockProducts })));
+import { mockProducts, mockCategories } from "../../../mocks/mockData";
 
 export default function DashboardPage() {
     // Cálculos dos cards
@@ -16,7 +17,6 @@ export default function DashboardPage() {
                 <LowStockProducts products={lowStockProducts} categories={mockCategories} />
             </div>
             <div className="bg-white rounded-xl shadow p-6 flex flex-col justify-center">
-                <h2 className="text-lg font-bold mb-4">Produtos por categoria</h2>
                 <ProductsByCategoryChart products={mockProducts} categories={mockCategories} />
             </div>
         </div>

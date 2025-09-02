@@ -1,12 +1,13 @@
 "use client"
 
 import { useState } from "react";
-import { mockProducts, mockCategories } from "../../mocks/mockData";
-import { ProductFilters } from "../../components/products/ProductFilters";
-import { ProductActions } from "../../components/products/ProductActions";
-import { ProductTable } from "../../components/products/ProductTable";
-import { ProductForm } from "../../components/forms/ProductForm";
-import { useToast } from "../../hooks/useToast";
+import { mockProducts, mockCategories } from "../../../mocks/mockData";
+import dynamic from "next/dynamic";
+const ProductFilters = dynamic(() => import("../../../components/products/ProductFilters").then(mod => ({ default: mod.ProductFilters })));
+const ProductActions = dynamic(() => import("../../../components/products/ProductActions").then(mod => ({ default: mod.ProductActions })));
+const ProductTable = dynamic(() => import("../../../components/products/ProductTable").then(mod => ({ default: mod.ProductTable })));
+const ProductForm = dynamic(() => import("../../../components/forms/ProductForm").then(mod => ({ default: mod.ProductForm })));
+import { useToast } from "../../../hooks/useToast";
 
 export default function ProductsPage() {
     const { showToast, ToastComponent } = useToast();

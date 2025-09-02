@@ -1,5 +1,10 @@
 import { ProductActionsProps } from "@/types/ProductActionsProps";
 
+/**
+ * ProductActions component for creating new products.
+ * @param {ProductActionsProps} props
+ * @returns {JSX.Element}
+ */
 export function ProductActions({ onCreate }: ProductActionsProps) {
   return (
     <div className="mb-6">

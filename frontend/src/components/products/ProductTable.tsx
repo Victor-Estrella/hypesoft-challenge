@@ -3,6 +3,15 @@ import { useState } from "react";
 
 const PAGE_SIZE = 5;
 
+/**
+ * ProductTable component for displaying products with sorting and pagination.
+ * @param {Object} props
+ * @param {Product[]} props.products
+ * @param {{ id: string; name: string }[]} props.categories
+ * @param {(id: string) => void} props.onEdit
+ * @param {(id: string) => void} props.onDelete
+ * @returns {JSX.Element}
+ */
 export function ProductTable({ products, categories, onEdit, onDelete }: {
   products: Product[];
   categories: { id: string; name: string }[];

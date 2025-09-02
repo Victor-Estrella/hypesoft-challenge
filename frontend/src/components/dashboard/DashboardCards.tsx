@@ -1,5 +1,10 @@
 import { DashboardCardsProps } from "@/types/DashboardCardsProps";
 
+/**
+ * DashboardCards component for displaying summary cards.
+ * @param {DashboardCardsProps} props
+ * @returns {JSX.Element}
+ */
 export function DashboardCards({ totalProducts, totalStockValue, lowStockCount }: DashboardCardsProps) {
     return (
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 mb-10">

@@ -2,6 +2,11 @@ import React from "react";
 import { LayoutProps } from "@/types/LayoutProps";
 
 
+/**
+ * MainLayout component for wrapping main content.
+ * @param {LayoutProps} props
+ * @returns {JSX.Element}
+ */
 export function MainLayout({ children }: LayoutProps) {
     return (
         <div className="min-h-screen bg-gray-50">  

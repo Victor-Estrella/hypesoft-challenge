@@ -1,5 +1,10 @@
 import { ProductFiltersProps } from "@/types/ProductFiltersProps";
 
+/**
+ * ProductFilters component for filtering products by name and category.
+ * @param {ProductFiltersProps} props
+ * @returns {JSX.Element}
+ */
 export function ProductFilters({ search, setSearch, category, setCategory, categories }: ProductFiltersProps) {
   return (
     <div className="flex flex-col md:flex-row md:items-center gap-4 mb-6">
