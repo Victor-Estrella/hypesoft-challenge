@@ -43,14 +43,16 @@ export default function ProductsPage() {
     // Salvar produto (criar/editar)
     const handleSave = (data: any) => {
         if (editId) {
-        setProducts((prev) => prev.map((p) => p.id === editId ? { ...p, ...data } : p));
-        showToast("Produto editado com sucesso!", "success");
+            setProducts((prev) => prev.map((p) => p.id === editId ? { ...p, ...data } : p));
+            showToast("Produto editado com sucesso!", "success");
         } else {
-        setProducts((prev) => [
-            ...prev,
-            { ...data, id: `p${Math.random().toString(36).slice(2, 9)}` },
-        ]);
-        showToast("Produto criado com sucesso!", "success");
+            // Gera o ID apenas no cliente, dentro do evento
+            const newId = typeof window !== 'undefined' ? `p${Math.random().toString(36).slice(2, 9)}` : '';
+            setProducts((prev) => [
+                ...prev,
+                { ...data, id: newId },
+            ]);
+            showToast("Produto criado com sucesso!", "success");
         }
         setModalOpen(false);
     };
