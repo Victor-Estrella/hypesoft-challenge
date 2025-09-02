@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Toast } from "../components/ui/Toast";
+import { ToastType } from "@/types/ToastType";
 
-export type ToastType = "success" | "error";
 
 export function useToast() {
   const [toast, setToast] = useState<{ message: string; type: ToastType } | null>(null);

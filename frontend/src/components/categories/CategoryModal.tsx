@@ -1,18 +1,5 @@
+import { CategoryModalProps } from "@/types/CategoryModalProps";
 import { useState } from "react";
-
-export type Category = {
-  id: string;
-  name: string;
-};
-
-interface CategoryModalProps {
-  categories: Category[];
-  onCreate: (name: string) => void;
-  onEdit: (id: string, name: string) => void;
-  onDelete: (id: string) => void;
-  open: boolean;
-  onClose: () => void;
-}
 
 export function CategoryModal({ categories, onCreate, onEdit, onDelete, open, onClose }: CategoryModalProps) {
   const [newName, setNewName] = useState("");
@@ -42,13 +29,7 @@ export function CategoryModal({ categories, onCreate, onEdit, onDelete, open, on
       <div className="relative bg-white rounded-xl shadow-lg p-6 w-full max-w-md z-10">
         <h2 className="text-lg font-bold mb-4">Categorias</h2>
         <div className="mb-4">
-          <input
-            type="text"
-            className="border rounded px-3 py-2 w-full mb-2"
-            placeholder="Nova categoria"
-            value={newName}
-            onChange={e => setNewName(e.target.value)}
-          />
+          <input type="text" className="border rounded px-3 py-2 w-full mb-2" placeholder="Nova categoria" value={newName} onChange={e => setNewName(e.target.value)} />
           <button className="bg-indigo-600 text-white px-4 py-2 rounded w-full" onClick={handleCreate}>
             Adicionar
           </button>
@@ -61,12 +42,7 @@ export function CategoryModal({ categories, onCreate, onEdit, onDelete, open, on
               <li key={cat.id} className="py-2 flex items-center justify-between gap-2">
                 {editId === cat.id ? (
                   <>
-                    <input
-                      type="text"
-                      className="border rounded px-2 py-1 flex-1"
-                      value={editName}
-                      onChange={e => setEditName(e.target.value)}
-                    />
+                    <input type="text" className="border rounded px-2 py-1 flex-1" value={editName} onChange={e => setEditName(e.target.value)} />
                     <button className="text-green-600 px-2" onClick={handleEdit}>Salvar</button>
                     <button className="text-gray-500 px-2" onClick={() => { setEditId(null); setEditName(""); }}>Cancelar</button>
                   </>

@@ -1,10 +1,4 @@
-type DashboardCardsProps = {
-    totalProducts: number;
-    totalStockValue: number;
-    lowStockCount: number;
-};
-
-import { Box, AlertTriangle, DollarSign } from "lucide-react";
+import { DashboardCardsProps } from "@/types/DashboardCardsProps";
 
 export function DashboardCards({ totalProducts, totalStockValue, lowStockCount }: DashboardCardsProps) {
     return (

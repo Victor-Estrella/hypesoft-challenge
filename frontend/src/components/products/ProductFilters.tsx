@@ -1,10 +1,4 @@
-type ProductFiltersProps = {
-  search: string;
-  setSearch: (v: string) => void;
-  category: string;
-  setCategory: (v: string) => void;
-  categories: { id: string; name: string }[];
-};
+import { ProductFiltersProps } from "@/types/ProductFiltersProps";
 
 export function ProductFilters({ search, setSearch, category, setCategory, categories }: ProductFiltersProps) {
   return (

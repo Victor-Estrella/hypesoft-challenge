@@ -1,6 +1,6 @@
+import { ToastType } from "@/types/ToastType";
 import { useEffect } from "react";
 
-export type ToastType = "success" | "error";
 
 export function Toast({ message, type, onClose }: { message: string; type: ToastType; onClose: () => void }) {
     useEffect(() => {

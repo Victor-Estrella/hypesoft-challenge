@@ -1,7 +1,8 @@
 "use client"
 import { useState } from "react";
-import { CategoryModal, Category } from "../../components/categories/CategoryModal";
+import { CategoryModal } from "../../components/categories/CategoryModal";
 import { useToast } from "../../hooks/useToast";
+import { Category } from "@/types/Category";
 
 export default function CategoriesPage() {
     const [categories, setCategories] = useState<Category[]>([

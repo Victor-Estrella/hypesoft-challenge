@@ -1,12 +1,4 @@
-type Product = {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  category: string;
-  stock: number;
-};
-
+import { Product } from "@/types/Product";
 import { useState } from "react";
 
 const PAGE_SIZE = 5;

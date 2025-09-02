@@ -2,6 +2,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { ProductFormProps } from "@/types/ProductFormProps";
 
 const schema = z.object({
     name: z.string().min(1, "Nome obrigatório"),
@@ -10,15 +11,6 @@ const schema = z.object({
     category: z.string().min(1, "Categoria obrigatória"),
     stock: z.number().int().min(0, "Estoque deve ser inteiro >= 0"),
 });
-
-type ProductFormValues = z.infer<typeof schema>;
-
-type ProductFormProps = {
-    categories: { id: string; name: string }[];
-    initialValues?: Partial<ProductFormValues>;
-    onSubmit: (data: ProductFormValues) => void;
-    onCancel?: () => void;
-};
 
 export function ProductForm({ categories, initialValues, onSubmit, onCancel }: ProductFormProps) {
     const {
