@@ -50,7 +50,6 @@ public class ProductService : IProductService
 
     public async Task<ProductDto> CreateProductAsync(CreateProductDto createProductDto)
     {
-        ValidateCreateDto(createProductDto);
 
         var prodcut = new Product
         {
@@ -77,7 +76,6 @@ public class ProductService : IProductService
     public async Task<ProductDto> UpdateProductAsync(string id, UpdateProductDto updateProductDto)
     {
         ValidateObjectId(id);
-        ValidateUpdateDto(updateProductDto);
 
         try
         {
@@ -149,21 +147,6 @@ public class ProductService : IProductService
             throw new MongoException("Invalid MongoDB ObjectID format");
     }
 
-    private static void ValidateCreateDto(CreateProductDto dto) 
-    {
-        if (dto == null)
-            throw new MongoException("Product data is required");
-        if (string.IsNullOrEmpty(dto.Name))
-            throw new MongoException("Product name is required");
-    }
-
-    private static void ValidateUpdateDto(UpdateProductDto dto)
-    {
-        if (dto == null)
-            throw new MongoException("Product data is required");
-        if (string.IsNullOrEmpty(dto.Name))
-            throw new MongoException("Product name is required");
-    }
 
     private static ProductDto MapToDto(Product product) => new()
     {

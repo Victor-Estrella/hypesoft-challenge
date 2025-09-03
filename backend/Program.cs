@@ -9,7 +9,17 @@ using MongoDB.Driver;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
 builder.Services.ConfigureCors(builder.Configuration);
+
+// FluentValidation
+builder.Services.AddValidatorsFromAssemblyContaining<backend.Hypesoft.Application.Validators.CreateProductDtoValidator>();
+
+// AutoMapper
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+// MediatR
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(AppDomain.CurrentDomain.GetAssemblies()));
 
 
 // Serviços padrão
@@ -24,6 +34,7 @@ builder.Services.Configure<MongoDbSettings>(builder.Configuration.GetSection("Mo
 builder.Services.AddScoped<IProductService, ProductService>();
 
 var app = builder.Build();
+
 app.UseCors("CorsPolicy");
 
 if (app.Environment.IsDevelopment())
