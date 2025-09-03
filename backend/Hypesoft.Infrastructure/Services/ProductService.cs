@@ -2,8 +2,6 @@
 
 using backend.Hypesoft.Domain.Entities;
 using MongoDB.Driver;
-using backend.Hypesoft.Infrastructure.Settings;
-using Microsoft.Extensions.Options;
 using backend.Hypesoft.Infrastructure.Services;
 using backend.Hypesoft.Application.DTOs;
 using backend.Hypesoft.Infrastructure.Data;
@@ -11,64 +9,76 @@ using backend.Hypesoft.Infrastructure.Data;
 public class ProductService : IProductService
 {
     private readonly AppDbContext _context;
-    public async Task<ProductDto> CreateProductAsync(CreateProductDto createProductDto)
+
+    public ProductService(AppDbContext context)
     {
-        ValidateCreateDto(createProductDto);
-
-        var product = new Product
-        {
-            Name = createProductDto.Name,
-            Description = createProductDto.Description,
-            Category = createProductDto.Category,
-            Price = createProductDto.Price,
-            StockQuantity = createProductDto.StockQuantity,
-        };
-
-        try
-        {
-            await _context.ProductCollection.InsertOneAsync(product);
-            return MapToDto(product);
-        }
-        catch (Exception ex)
-        {
-            throw new MongoException($"Failed to create product: {ex.Message}");
-        }
+        _context = context;
     }
 
     public async Task<IEnumerable<ProductDto>> GetAllProductsAsync()
     {
         try
         {
-            var products = await _context.ProductCollection.Find
-                (Builders<Product>.Filter.Empty).ToListAsync();
+            var products = await _context.ProductCollection.Find(Builders<Product>.Filter.Empty)
+                .ToListAsync();
             return products.Select(MapToDto);
+
         }
         catch (Exception ex)
         {
-            throw new MongoException($"Failed to retrive product {ex.Message}");
+            throw new MongoException($"Failed to  retrieve product {ex.Message}");
         }
     }
 
     public async Task<ProductDto?> GetProductByIdAsync(string id)
     {
-       ValidateObjectId(id);
+        ValidateObjectId(id);
+
         try
         {
             var filter = Builders<Product>.Filter.Eq(p => p.Id, id);
             var product = await _context.ProductCollection.Find(filter).FirstOrDefaultAsync()
                 ?? throw new MongoException($"Product with {id} not found");
             return MapToDto(product);
+
         }
-        catch (Exception ex) when (ex is MongoException) 
+        catch (Exception ex) when (ex is not MongoException)
         {
             throw new MongoException($"Database error {ex.Message}");
         }
+    }
+
+    public async Task<ProductDto> CreateProductAsync(CreateProductDto createProductDto)
+    {
+        ValidateCreateDto(createProductDto);
+
+        var prodcut = new Product
+        {
+            Name = createProductDto.Name,
+            Description = createProductDto.Description,
+            Price = createProductDto.Price,
+            Category = createProductDto.Category,
+            StockQuantity = createProductDto.StockQuantity
+        };
+
+        try
+        {
+            await _context.ProductCollection.InsertOneAsync(prodcut);
+            return MapToDto(prodcut);
+
+        }
+        catch (Exception ex)
+        {
+            throw new MongoException($"Failed to create product : {ex.Message}");
+        }
+
     }
 
     public async Task<ProductDto> UpdateProductAsync(string id, UpdateProductDto updateProductDto)
     {
         ValidateObjectId(id);
         ValidateUpdateDto(updateProductDto);
+
         try
         {
             var update = Builders<Product>.Update
@@ -83,17 +93,20 @@ public class ProductService : IProductService
                 update,
                 new FindOneAndUpdateOptions<Product> { ReturnDocument = ReturnDocument.After }
             ) ?? throw new MongoException($"Product with ID {id} not found");
-            return MapToDto(product);
 
+            return MapToDto(product);
         }
-        catch (Exception ex) when (ex is not MongoException) 
+        catch (Exception ex) when (ex is not MongoException)
         {
-            throw new MongoException($"Failed to update product {ex.Message}");
+            throw new MongoException($"Failed to update product: {ex.Message}");
         }
     }
+
+
     public async Task<bool> DeleteProductAsync(string id)
     {
         ValidateObjectId(id);
+
         try
         {
             var result = await _context.ProductCollection.DeleteOneAsync(p => p.Id == id);
@@ -102,10 +115,15 @@ public class ProductService : IProductService
 
             return true;
         }
-        catch (Exception ex) when (ex is not MongoException) 
-        { 
-            throw new MongoException($"Failed to update product {ex.Message}"); 
+        catch (Exception ex) when (ex is not MongoException)
+        {
+            throw new MongoException($"Failed to delete product: {ex.Message}");
         }
+    }
+
+    public Task<IEnumerable<ProductDto>> GetAllProductsAsync(int pageNumber, int pageSize)
+    {
+        throw new NotImplementedException();
     }
 
     public Task<IEnumerable<ProductDto>> GetByCategoryAsync(string category, int pageNumber, int pageSize)
@@ -114,11 +132,6 @@ public class ProductService : IProductService
     }
 
     public Task<IEnumerable<ProductDto>> GetLowStockAsync(int threshold = 10)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<ProductDto?> GetProductByIdAsync(Guid id)
     {
         throw new NotImplementedException();
     }
@@ -161,4 +174,5 @@ public class ProductService : IProductService
         Category = product.Category,
         StockQuantity = product.StockQuantity
     };
+
 }

@@ -5,7 +5,7 @@ namespace backend.Hypesoft.Infrastructure.Services;
 
 public interface IProductService
 {
-    Task<ProductDto?> GetProductByIdAsync(Guid id);
+    Task<ProductDto?> GetProductByIdAsync(string id);
     Task<IEnumerable<ProductDto>> GetAllProductsAsync();
     Task<IEnumerable<ProductDto>> GetAllProductsAsync(int pageNumber, int pageSize);
     Task<ProductDto> CreateProductAsync(CreateProductDto createProductDto);

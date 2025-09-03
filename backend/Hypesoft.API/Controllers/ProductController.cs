@@ -1,6 +1,5 @@
 ﻿namespace backend.Hypesoft.API.Controllers;
 
-using backend.Hypesoft.Application.Commands;
 using backend.Hypesoft.Application.DTOs;
 using backend.Hypesoft.Infrastructure.Services;
 using MediatR;
@@ -13,85 +12,130 @@ using MongoDB.Driver;
 public class ProductController : ControllerBase
 {
     private readonly IProductService _productService;
-    public ProductController(IProductService productService)
+    private readonly ILogger<ProductController> _logger;
+
+    public ProductController(IProductService productService, ILogger<ProductController> logger)
     {
         _productService = productService;
-    }
-
-
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(Guid id)
-    {
-        var result = await _mediator.Send(new GetProductByIdQuery { Id = id });
-        return result == null ? NotFound() : Ok(result);
+        _logger = logger;
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult<IEnumerable<ProductDto>>> GetAllProducts()
     {
-        var result = await _mediator.Send(new GetAllProductsQuery { PageNumber = pageNumber, PageSize = pageSize });
-        return Ok(result);
+        try
+        {
+            var products = await _productService.GetAllProductsAsync();
+            return Ok(products);
+        }
+        catch (MongoException ex)
+        {
+            _logger.LogError(ex, "Error retrieving all products");
+            return BadRequest(ex.Message);
+        }
     }
 
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult <ProductDto>> CreateProduct([FromBody] ProductDto productDto)
+    public async Task<ActionResult<ProductDto>> CreateProduct([FromBody] CreateProductDto dto)
     {
         try
         {
-            var product = await _productService.CreateProductAsync(productDto);
+            var product = await _productService.CreateProductAsync(dto);
             return CreatedAtAction(nameof(GetProductById), new { id = product.Id }, product);
         }
-        catch (MongoException ex) 
+        catch (MongoException ex)
         {
             _logger.LogError(ex, "Error creating product");
             return BadRequest(ex.Message);
         }
+    }
 
+
+
+    [HttpGet("{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<ProductDto>> GetProductById([FromRoute] string id)
+    {
+        try
+        {
+            var product = await _productService.GetProductByIdAsync(id);
+            return Ok(product);
+        }
+        catch (MongoException ex)
+        {
+            _logger.LogError(ex, "Error retrieving product {ProductId}", id);
+            return ex.Message.Contains("not found") ? NotFound(ex.Message) : BadRequest(ex.Message);
+        }
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateProductCommand command)
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<ProductDto>> UpdateProduct([FromRoute] string id, [FromBody] UpdateProductDto dto)
     {
-        if (id != command.Id) return BadRequest("Id mismatch");
-        var result = await _mediator.Send(command);
-        return result == null ? NotFound() : Ok(result);
+        try
+        {
+            var product = await _productService.UpdateProductAsync(id, dto);
+            return Ok(product);
+        }
+        catch (MongoException ex)
+        {
+            _logger.LogError(ex, "Error updating product {ProductId}", id);
+            return ex.Message.Contains("not found") ? NotFound(ex.Message) : BadRequest(ex.Message);
+        }
     }
+
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(Guid id)
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DeleteProduct([FromRoute] string id)
     {
-        var result = await _mediator.Send(new DeleteProductCommand { Id = id });
-        return result ? NoContent() : NotFound();
+        try
+        {
+            await _productService.DeleteProductAsync(id);
+            return NoContent();
+        }
+        catch (MongoException ex)
+        {
+            _logger.LogError(ex, "Error deleting product {ProductId}", id);
+            return ex.Message.Contains("not found") ? NotFound(ex.Message) : BadRequest(ex.Message);
+        }
     }
 
-    [HttpGet("search")]
-    public async Task<IActionResult> Search([FromQuery] string name)
-    {
-        var result = await _mediator.Send(new SearchProductsByNameQuery { Name = name });
-        return Ok(result);
-    }
+    //[HttpGet("search")]
+    //public async Task<IActionResult> Search([FromQuery] string name)
+    //{
+    //    var result = await _mediator.Send(new SearchProductsByNameQuery { Name = name });
+    //    return Ok(result);
+    //}
 
-    [HttpGet("category/{category}")]
-    public async Task<IActionResult> GetByCategory(string category, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
-    {
-        var result = await _mediator.Send(new GetProductsByCategoryQuery { Category = category, PageNumber = pageNumber, PageSize = pageSize });
-        return Ok(result);
-    }
+    //[HttpGet("category/{category}")]
+    //public async Task<IActionResult> GetByCategory(string category, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+    //{
+    //    var result = await _mediator.Send(new GetProductsByCategoryQuery { Category = category, PageNumber = pageNumber, PageSize = pageSize });
+    //    return Ok(result);
+    //}
 
-    [HttpGet("low-stock")]
-    public async Task<IActionResult> GetLowStock([FromQuery] int threshold = 10)
-    {
-        var result = await _mediator.Send(new GetLowStockProductsQuery { Threshold = threshold });
-        return Ok(result);
-    }
+    //[HttpGet("low-stock")]
+    //public async Task<IActionResult> GetLowStock([FromQuery] int threshold = 10)
+    //{
+    //    var result = await _mediator.Send(new GetLowStockProductsQuery { Threshold = threshold });
+    //    return Ok(result);
+    //}
 
-    [HttpPatch("{id}/stock")]
-    public async Task<IActionResult> UpdateStock(Guid id, [FromBody] UpdateProductStockCommand command)
-    {
-        if (id != command.Id) return BadRequest("Id mismatch");
-        var result = await _mediator.Send(command);
-        return result == null ? NotFound() : Ok(result);
-    }
+    //[HttpPatch("{id}/stock")]
+    //public async Task<IActionResult> UpdateStock(Guid id, [FromBody] UpdateProductStockCommand command)
+    //{
+    //    if (id != command.Id) return BadRequest("Id mismatch");
+    //    var result = await _mediator.Send(command);
+    //    return result == null ? NotFound() : Ok(result);
+    //}
 }
