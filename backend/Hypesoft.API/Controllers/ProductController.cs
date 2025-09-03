@@ -1,16 +1,23 @@
 ﻿namespace backend.Hypesoft.API.Controllers;
 
-using backend.Hypesoft.Application.Queries;
 using backend.Hypesoft.Application.Commands;
+using backend.Hypesoft.Application.DTOs;
+using backend.Hypesoft.Infrastructure.Services;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Driver;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ProductsController : ControllerBase
+public class ProductController : ControllerBase
 {
-    private readonly IMediator _mediator;
-    public ProductsController(IMediator mediator) => _mediator = mediator;
+    private readonly IProductService _productService;
+    public ProductController(IProductService productService)
+    {
+        _productService = productService;
+    }
+
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(Guid id)
@@ -27,10 +34,21 @@ public class ProductsController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] CreateProductCommand command)
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult <ProductDto>> CreateProduct([FromBody] ProductDto productDto)
     {
-        var result = await _mediator.Send(command);
-        return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
+        try
+        {
+            var product = await _productService.CreateProductAsync(productDto);
+            return CreatedAtAction(nameof(GetProductById), new { id = product.Id }, product);
+        }
+        catch (MongoException ex) 
+        {
+            _logger.LogError(ex, "Error creating product");
+            return BadRequest(ex.Message);
+        }
+
     }
 
     [HttpPut("{id}")]

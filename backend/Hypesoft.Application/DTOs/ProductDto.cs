@@ -1,11 +1,24 @@
-﻿namespace backend.Hypesoft.Application.DTOs;
+﻿using System.Text.Json.Serialization;
 
-public class ProductDto
+namespace backend.Hypesoft.Application.DTOs;
+
+public record ProductDto
 {
-    public Guid Id { get; set; }
-    public string Name { get; set; } = null!;
-    public string Description { get; set; } = null!;
-    public decimal Price { get; set; }
-    public string Category { get; set; } = null!;
-    public int StockQuantity { get; set; }
+    [JsonPropertyName("id")]
+    public string Id { get; init; }
+
+    [JsonPropertyName("name")]
+    public string Name { get; init; }
+
+    [JsonPropertyName("description")]
+    public string Description { get; init; }
+
+    [JsonPropertyName("price")]
+    public decimal Price { get; init; }
+
+    [JsonPropertyName("category")]
+    public string Category { get; init; }
+
+    [JsonPropertyName("stockQuantity")]
+    public int StockQuantity { get; init; }
 }

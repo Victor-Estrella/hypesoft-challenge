@@ -1,6 +1,5 @@
-using backend.Hypesoft.Domain.Repositories;
+using backend.Hypesoft.Infrastructure.Data;
 using backend.Hypesoft.Infrastructure.Services;
-using backend.Hypesoft.Infrastructure.Settings;
 using FluentValidation;
 using Microsoft.AspNetCore.Diagnostics;
 using MongoDB.Driver;
@@ -8,12 +7,10 @@ using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddSingleton<IMongoDbService, MongoDbService>();
-// Configurações do MongoDB
-builder.Services.Configure<MongoDbSettings>(builder.Configuration.GetSection("MongoDb"));
+builder.Services.AddSingleton<AppDbContext>();
 
 // Registro dos repositórios
-builder.Services.AddScoped<IProductRepository, backend.Hypesoft.Infrastructure.Repositories.ProductRepository>();
+builder.Services.AddScoped<IProductService, backend.Hypesoft.Infrastructure.Repositories.ProductRepository>();
 
 // Serviços padrão
 builder.Services.AddControllers();
