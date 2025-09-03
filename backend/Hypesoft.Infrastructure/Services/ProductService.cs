@@ -51,7 +51,7 @@ public class ProductService : IProductService
     public async Task<ProductDto> CreateProductAsync(CreateProductDto createProductDto)
     {
 
-        var prodcut = new Product
+        var product = new Product
         {
             Name = createProductDto.Name,
             Description = createProductDto.Description,
@@ -62,8 +62,8 @@ public class ProductService : IProductService
 
         try
         {
-            await _context.ProductCollection.InsertOneAsync(prodcut);
-            return MapToDto(prodcut);
+            await _context.ProductCollection.InsertOneAsync(product);
+            return MapToDto(product);
 
         }
         catch (Exception ex)
@@ -117,26 +117,6 @@ public class ProductService : IProductService
         {
             throw new MongoException($"Failed to delete product: {ex.Message}");
         }
-    }
-
-    public Task<IEnumerable<ProductDto>> GetAllProductsAsync(int pageNumber, int pageSize)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<IEnumerable<ProductDto>> GetByCategoryAsync(string category, int pageNumber, int pageSize)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<IEnumerable<ProductDto>> GetLowStockAsync(int threshold = 10)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<IEnumerable<ProductDto>> SearchByNameAsync(string name)
-    {
-        throw new NotImplementedException();
     }
 
     private static void ValidateObjectId(string id)

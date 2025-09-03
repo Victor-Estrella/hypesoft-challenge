@@ -7,7 +7,8 @@ namespace backend.Hypesoft.Infrastructure.Data
 {
     public class AppDbContext
     {
-        public IMongoCollection<Product> ProductCollection { get; }
+    public IMongoCollection<Product> ProductCollection { get; }
+    public IMongoCollection<Category> CategoryCollection { get; }
 
         public AppDbContext(IOptions<MongoDbSettings> settings) 
         {
@@ -19,6 +20,7 @@ namespace backend.Hypesoft.Infrastructure.Data
 
             ProductCollection = database.GetCollection<Product>
             (settings.Value.CollectionName);
+            CategoryCollection = database.GetCollection<Category>("CategoryList");
         }
     }
 }

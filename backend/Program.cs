@@ -14,6 +14,7 @@ builder.Services.ConfigureCors(builder.Configuration);
 
 // FluentValidation
 builder.Services.AddValidatorsFromAssemblyContaining<backend.Hypesoft.Application.Validators.CreateProductDtoValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<backend.Hypesoft.Application.Validators.CreateCategoryDtoValidator>();
 
 // AutoMapper
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
@@ -32,6 +33,7 @@ builder.Services.AddHealthChecks();
 builder.Services.AddSingleton<AppDbContext>();
 builder.Services.Configure<MongoDbSettings>(builder.Configuration.GetSection("MongoDB"));
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
 
 var app = builder.Build();
 
