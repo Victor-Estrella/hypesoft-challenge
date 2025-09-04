@@ -1,4 +1,4 @@
-import { Product } from "@/types/Product";
+import Product from "@/types/Product";
 import { useState } from "react";
 
 const PAGE_SIZE = 5;
@@ -49,7 +49,7 @@ export function ProductTable({ products, categories, onEdit, onDelete }: {
             <th className="px-4 py-2 text-left text-sm font-semibold text-gray-600">Descrição</th>
             <th className="px-4 py-2 text-left text-sm font-semibold text-gray-600 cursor-pointer" onClick={() => handleSort("price")}>Preço {sort.field === "price" ? (sort.direction === "asc" ? "▲" : "▼") : ""}</th>
             <th className="px-4 py-2 text-left text-sm font-semibold text-gray-600">Categoria</th>
-            <th className="px-4 py-2 text-left text-sm font-semibold text-gray-600 cursor-pointer" onClick={() => handleSort("stock")}>Estoque {sort.field === "stock" ? (sort.direction === "asc" ? "▲" : "▼") : ""}</th>
+            <th className="px-4 py-2 text-left text-sm font-semibold text-gray-600 cursor-pointer" onClick={() => handleSort("stockQuantity")}>Estoque {sort.field === "stockQuantity" ? (sort.direction === "asc" ? "▲" : "▼") : ""}</th>
             <th className="px-4 py-2"></th>
           </tr>
         </thead>
@@ -65,7 +65,7 @@ export function ProductTable({ products, categories, onEdit, onDelete }: {
                 <td className="px-4 py-2 text-sm text-gray-500">{p.description}</td>
                 <td className="px-4 py-2 text-green-700 font-semibold">R$ {p.price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
                 <td className="px-4 py-2 text-sm">{categories.find((cat) => cat.id === p.category)?.name}</td>
-                <td className={`px-4 py-2 text-sm font-bold ${p.stock < 10 ? 'text-orange-600' : 'text-gray-700'}`}>{p.stock}</td>
+                <td className={`px-4 py-2 text-sm font-bold ${p.stockQuantity < 10 ? 'text-orange-600' : 'text-gray-700'}`}>{p.stockQuantity}</td>
                 <td className="px-4 py-2 flex gap-2">
                   <button className="text-indigo-600 hover:underline text-sm" onClick={() => onEdit(p.id)}>Editar</button>
                   <button className="text-red-600 hover:underline text-sm" onClick={() => onDelete(p.id)}>Excluir</button>

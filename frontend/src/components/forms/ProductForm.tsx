@@ -9,7 +9,7 @@ const schema = z.object({
     description: z.string().optional(),
     price: z.number().min(0, "Preço deve ser maior ou igual a zero"),
     category: z.string().min(1, "Categoria obrigatória"),
-    stock: z.number().int().min(0, "Estoque deve ser inteiro >= 0"),
+    StockQuantity: z.number().int().min(0, "Estoque deve ser inteiro >= 0"),
 });
 
 /**
@@ -56,8 +56,8 @@ export function ProductForm({ categories, initialValues, onSubmit, onCancel }: P
                 </div>
                 <div>
                     <label className="block text-sm font-medium mb-1">Estoque *</label>
-                    <input type="number" {...register("stock", { valueAsNumber: true })} className={`border rounded px-3 py-2 w-full ${errors.stock ? "border-red-500" : ""}`} placeholder="Quantidade" />
-                    {errors.stock && <span className="text-xs text-red-500">{errors.stock.message}</span>}
+                    <input type="number" {...register("StockQuantity", { valueAsNumber: true })} className={`border rounded px-3 py-2 w-full ${errors.StockQuantity ? "border-red-500" : ""}`} placeholder="Quantidade" />
+                    {errors.StockQuantity && <span className="text-xs text-red-500">{errors.StockQuantity.message}</span>}
                 </div>
             </div>
             <div className="flex gap-4 mt-4">

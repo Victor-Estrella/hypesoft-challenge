@@ -1,51 +1,77 @@
 "use client"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 const CategoryModal = dynamic(() => import("../../../components/categories/CategoryModal").then(mod => ({ default: mod.CategoryModal })));
 import { useToast } from "../../../hooks/useToast";
 import { Category } from "@/types/Category";
 
 export default function CategoriesPage() {
-    const [categories, setCategories] = useState<Category[]>([
-        { id: "cat-1", name: "Eletrônicos" },
-        { id: "cat-2", name: "Roupas" },
-        { id: "cat-3", name: "Alimentos" },
-    ]);
+    const [categories, setCategories] = useState<Category[]>([]);
     const [modalOpen, setModalOpen] = useState(false);
     const { showToast, ToastComponent } = useToast();
 
-    function handleCreate(name: string) {
+    // Buscar categorias do backend
+    useEffect(() => {
+        fetch("https://localhost:7159/api/category")
+            .then(res => res.json())
+            .then(data => setCategories(data))
+            .catch(() => showToast("Erro ao buscar categorias", "error"));
+    }, []);
+
+    async function handleCreate(name: string) {
         if (!name.trim()) {
-        showToast("Nome da categoria não pode ser vazio.", "error");
-        return;
+            showToast("Nome da categoria não pode ser vazio.", "error");
+            return;
         }
         if (categories.some(cat => cat.name.toLowerCase() === name.trim().toLowerCase())) {
-        showToast("Categoria já existe.", "error");
-        return;
+            showToast("Categoria já existe.", "error");
+            return;
         }
-        setCategories(prev => [
-        ...prev,
-        { id: `cat-${prev.length + 1}`, name: name.trim() }
-        ]);
-        showToast("Categoria criada com sucesso!", "success");
+        const res = await fetch("https://localhost:7159/api/category", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name }),
+        });
+        if (res.ok) {
+            const newCategory = await res.json();
+            setCategories(prev => [...prev, newCategory]);
+            showToast("Categoria criada com sucesso!", "success");
+        } else {
+            showToast("Erro ao criar categoria", "error");
+        }
     }
 
-    function handleEdit(id: string, name: string) {
+    async function handleEdit(id: string, name: string) {
         if (!name.trim()) {
-        showToast("Nome da categoria não pode ser vazio.", "error");
-        return;
+            showToast("Nome da categoria não pode ser vazio.", "error");
+            return;
         }
         if (categories.some(cat => cat.name.toLowerCase() === name.trim().toLowerCase() && cat.id !== id)) {
-        showToast("Categoria já existe.", "error");
-        return;
+            showToast("Categoria já existe.", "error");
+            return;
         }
-        setCategories(prev => prev.map(cat => cat.id === id ? { ...cat, name: name.trim() } : cat));
-        showToast("Categoria editada com sucesso!", "success");
+        const res = await fetch(`https://localhost:7159/api/category/${id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name }),
+        });
+        if (res.ok) {
+            const updated = await res.json();
+            setCategories(prev => prev.map(cat => cat.id === id ? updated : cat));
+            showToast("Categoria editada com sucesso!", "success");
+        } else {
+            showToast("Erro ao editar categoria", "error");
+        }
     }
 
-    function handleDelete(id: string) {
-        setCategories(prev => prev.filter(cat => cat.id !== id));
-        showToast("Categoria excluída com sucesso!", "success");
+    async function handleDelete(id: string) {
+        const res = await fetch(`https://localhost:7159/api/category/${id}`, { method: "DELETE" });
+        if (res.ok) {
+            setCategories(prev => prev.filter(cat => cat.id !== id));
+            showToast("Categoria excluída com sucesso!", "success");
+        } else {
+            showToast("Erro ao excluir categoria", "error");
+        }
     }
 
     return (

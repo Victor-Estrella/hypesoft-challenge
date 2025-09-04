@@ -15,7 +15,7 @@ export function Sidebar() {
     return (
         <aside className="w-64 bg-white border-r shadow-sm flex flex-col">
             <div className="h-20 flex items-center justify-center border-b">
-                <span className="font-bold text-xl tracking-tight">HypeSoft</span>
+                <a href="/" className="font-bold text-xl tracking-tight hover:text-indigo-600 transition-colors">HypeSoft</a>
             </div>
             <nav className="flex-1 px-4 py-6 space-y-2">
                 <a href={`/${locale}/dashboard`} className="block px-3 py-2 rounded hover:bg-gray-100 font-medium">{t('dashboard')}</a>
