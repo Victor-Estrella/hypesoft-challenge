@@ -1,7 +1,6 @@
 
 "use client";
 import React from "react";
-import { LanguageSwitcher } from "../../i18n/LanguageSwitcher";
 import { useTranslations, useLocale } from "next-intl";
 
 /**
