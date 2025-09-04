@@ -1,6 +1,5 @@
 using backend.Hypesoft.Infrastructure.Data;
 using backend.Hypesoft.Infrastructure.Extensions;
-using backend.Hypesoft.Infrastructure.Repositories;
 using backend.Hypesoft.Infrastructure.Services;
 using backend.Hypesoft.Infrastructure.Settings;
 using FluentValidation;

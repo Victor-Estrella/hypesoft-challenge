@@ -4,10 +4,10 @@ using backend.Hypesoft.Infrastructure.Data;
 using MongoDB.Driver;
 
 namespace backend.Hypesoft.Infrastructure.Services;
-
 public class CategoryService : ICategoryService
 {
     private readonly AppDbContext _context;
+
     public CategoryService(AppDbContext context)
     {
         _context = context;
@@ -17,7 +17,8 @@ public class CategoryService : ICategoryService
     {
         try
         {
-            var categories = await _context.CategoryCollection.Find(Builders<Category>.Filter.Empty).ToListAsync();
+            var categories = await _context.CategoryCollection.Find(Builders<Category>.Filter.Empty)
+                .ToListAsync();
             return categories.Select(MapToDto);
         }
         catch (Exception ex)
@@ -49,6 +50,7 @@ public class CategoryService : ICategoryService
         {
             Name = createCategoryDto.Name
         };
+
         try
         {
             await _context.CategoryCollection.InsertOneAsync(category);

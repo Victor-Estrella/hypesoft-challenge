@@ -79,8 +79,8 @@ public class CategoryController : ControllerBase
     {
         try
         {
-           var updated = await _categoryService.UpdateCategoryAsync(id, dto);
-            return Ok(updated);
+           var category = await _categoryService.UpdateCategoryAsync(id, dto);
+            return Ok(category);
 
         }
         catch (MongoException ex)

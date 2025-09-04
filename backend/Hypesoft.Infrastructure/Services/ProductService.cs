@@ -1,11 +1,9 @@
-﻿namespace backend.Hypesoft.Infrastructure.Repositories;
-
+﻿using backend.Hypesoft.Application.DTOs;
 using backend.Hypesoft.Domain.Entities;
-using MongoDB.Driver;
-using backend.Hypesoft.Infrastructure.Services;
-using backend.Hypesoft.Application.DTOs;
 using backend.Hypesoft.Infrastructure.Data;
+using MongoDB.Driver;
 
+namespace backend.Hypesoft.Infrastructure.Services;
 public class ProductService : IProductService
 {
     private readonly AppDbContext _context;
