@@ -13,10 +13,12 @@ export default function DashboardPage() {
     const [categories, setCategories] = useState<Category[]>([]);
     const [loading, setLoading] = useState(true);
 
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+
     useEffect(() => {
         Promise.all([
-            fetch("https://localhost:7159/api/product").then(res => res.json()),
-            fetch("https://localhost:7159/api/category").then(res => res.json())
+            fetch(`${API_URL}/api/product`).then(res => res.json()),
+            fetch(`${API_URL}/api/category`).then(res => res.json())
         ]).then(([prod, cat]) => {
             setProducts(prod);
             setCategories(cat);
@@ -36,7 +38,7 @@ export default function DashboardPage() {
     const lowStockProducts = products.filter((p) => (typeof p.stockQuantity === 'number' ? p.stockQuantity : 0) < 10);
 
     return (
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 w-full max-w-6xl mx-auto px-2 md:px-6">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 w-full max-w-6xl lg:max-w-full mx-auto px-2 md:px-6">
             <div className="space-y-6">
                 <DashboardCards totalProducts={totalProducts} totalStockValue={totalStockValue} lowStockCount={lowStockProducts.length}/>
                 <LowStockProducts products={lowStockProducts} categories={categories} />

@@ -1,18 +1,23 @@
 "use client"
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import dynamic from "next/dynamic";
 const CategoryModal = dynamic(() => import("../../../components/categories/CategoryModal").then(mod => ({ default: mod.CategoryModal })));
 import { useToast } from "../../../hooks/useToast";
 import { Category } from "@/types/Category";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+
 export default function CategoriesPage() {
     const [categories, setCategories] = useState<Category[]>([]);
     const [modalOpen, setModalOpen] = useState(false);
     const { showToast, ToastComponent } = useToast();
+    const didFetch = useRef(false);
 
     // Buscar categorias do backend
     useEffect(() => {
-        fetch("https://localhost:7159/api/category")
+        if (didFetch.current) return;
+        didFetch.current = true;
+        fetch(`${API_URL}/api/category`)
             .then(res => res.json())
             .then(data => setCategories(data))
             .catch(() => showToast("Erro ao buscar categorias", "error"));
@@ -27,7 +32,7 @@ export default function CategoriesPage() {
             showToast("Categoria já existe.", "error");
             return;
         }
-        const res = await fetch("https://localhost:7159/api/category", {
+        const res = await fetch(`${API_URL}/api/category`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ name }),
@@ -50,7 +55,7 @@ export default function CategoriesPage() {
             showToast("Categoria já existe.", "error");
             return;
         }
-        const res = await fetch(`https://localhost:7159/api/category/${id}`, {
+        const res = await fetch(`${API_URL}/api/category/${id}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ name }),
@@ -65,7 +70,7 @@ export default function CategoriesPage() {
     }
 
     async function handleDelete(id: string) {
-        const res = await fetch(`https://localhost:7159/api/category/${id}`, { method: "DELETE" });
+        const res = await fetch(`${API_URL}/api/category/${id}`, { method: "DELETE" });
         if (res.ok) {
             setCategories(prev => prev.filter(cat => cat.id !== id));
             showToast("Categoria excluída com sucesso!", "success");

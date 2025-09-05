@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import dynamic from "next/dynamic";
 const ProductFilters = dynamic(() => import("../../../components/products/ProductFilters").then(mod => ({ default: mod.ProductFilters })));
 const ProductActions = dynamic(() => import("../../../components/products/ProductActions").then(mod => ({ default: mod.ProductActions })));
@@ -18,22 +18,46 @@ export default function ProductsPage() {
     const [modalOpen, setModalOpen] = useState(false);
     const [editId, setEditId] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(false);
+    const didFetchCategories = useRef(false);
 
-    // Buscar produtos
-    useEffect(() => {
-        fetch("https://localhost:7159/api/product")
-            .then(res => res.json())
-            .then(data => setProducts(data))
-            .catch(() => showToast("Erro ao buscar produtos", "error"))
-            .finally(() => setLoading(false));
-    }, []);
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
-    // Buscar categorias
+    // Buscar categorias apenas uma vez
+    const fetchCategories = async () => {
+        if (didFetchCategories.current) return;
+        didFetchCategories.current = true;
+        try {
+            const res = await fetch(`${API_URL}/api/category`);
+            if (!res.ok) throw new Error();
+            const data = await res.json();
+            setCategories(data);
+        } catch {
+            showToast("Erro ao buscar categorias", "error");
+        }
+    };
+
+    // Buscar produtos sob demanda
+    const fetchProducts = async () => {
+        setLoading(true);
+        setError(false);
+        try {
+            const res = await fetch(`${API_URL}/api/product`);
+            if (!res.ok) throw new Error();
+            const data = await res.json();
+            setProducts(data);
+        } catch {
+            setError(true);
+            showToast("Erro ao buscar produtos", "error");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Buscar categorias e produtos ao montar
     useEffect(() => {
-        fetch("https://localhost:7159/api/category")
-            .then(res => res.json())
-            .then(data => setCategories(data))
-            .catch(() => showToast("Erro ao buscar categorias", "error"));
+        fetchCategories();
+        fetchProducts();
     }, []);
 
     // Filtra produtos por nome e categoria
@@ -54,10 +78,10 @@ export default function ProductsPage() {
     };
     const handleDelete = async (id: string) => {
         if (window.confirm("Deseja realmente excluir este produto?")) {
-            const res = await fetch(`https://localhost:7159/api/product/${id}`, { method: "DELETE" });
+            const res = await fetch(`${API_URL}/api/product/${id}`, { method: "DELETE" });
             if (res.ok) {
-                setProducts((prev) => prev.filter((p) => p.id !== id));
                 showToast("Produto excluído com sucesso!", "success");
+                fetchProducts(); // Atualiza lista após exclusão
             } else {
                 showToast("Erro ao excluir produto", "error");
             }
@@ -65,28 +89,26 @@ export default function ProductsPage() {
     };
     const handleSave = async (data: any) => {
         if (editId) {
-            const res = await fetch(`https://localhost:7159/api/product/${editId}`, {
+            const res = await fetch(`${API_URL}/api/product/${editId}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
             });
             if (res.ok) {
-                const updated = await res.json();
-                setProducts((prev) => prev.map((p) => p.id === editId ? updated : p));
                 showToast("Produto editado com sucesso!", "success");
+                fetchProducts(); // Atualiza lista após edição
             } else {
                 showToast("Erro ao editar produto", "error");
             }
         } else {
-            const res = await fetch("https://localhost:7159/api/product", {
+            const res = await fetch(`${API_URL}/api/product`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
             });
             if (res.ok) {
-                const newProduct = await res.json();
-                setProducts((prev) => [...prev, newProduct]);
                 showToast("Produto criado com sucesso!", "success");
+                fetchProducts(); // Atualiza lista após criação
             } else {
                 showToast("Erro ao criar produto", "error");
             }
@@ -106,10 +128,14 @@ export default function ProductsPage() {
             {ToastComponent()}
             {loading ? (
                 <div className="text-center py-10 text-gray-400">Carregando produtos...</div>
-            ) : (
+            )
+            : (
                 <>
                     <ProductFilters search={search} setSearch={setSearch} category={category} setCategory={setCategory} categories={categories}/>
                     <ProductActions onCreate={handleCreate} />
+                    <button className="bg-gray-200 px-3 py-1 rounded ml-2" onClick={fetchProducts} disabled={loading}>
+                        Atualizar lista
+                    </button>
                     <ProductTable products={filteredProducts} categories={categories} onEdit={handleEdit} onDelete={handleDelete}/>
                 </>
             )}

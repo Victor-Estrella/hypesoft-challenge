@@ -1,11 +1,15 @@
-import { NextIntlClientProvider } from 'next-intl';
-import pt from '../../messages/pt.json';
-import en from '../../messages/en.json';
+"use client";
+import { NextIntlClientProvider } from "next-intl";
+import ptMessages from '../../messages/pt.json';
+import enMessages from '../../messages/en.json';
+import { useParams } from "next/navigation";
 
-export function I18nProvider({ children, locale }: { children: React.ReactNode; locale: string }) {
-    const messages = locale === 'en' ? en : pt;
+export default function I18nProvider({ children, timeZone }: { children: React.ReactNode, timeZone?: string }) {
+    const params = useParams();
+    const locale = typeof params.locale === "string" ? params.locale : Array.isArray(params.locale) ? params.locale[0] : "pt";
+    const messages = locale === 'en' ? enMessages : ptMessages;
     return (
-        <NextIntlClientProvider messages={messages} locale={locale}>
+        <NextIntlClientProvider locale={locale} messages={messages} timeZone={timeZone}>
             {children}
         </NextIntlClientProvider>
     );
