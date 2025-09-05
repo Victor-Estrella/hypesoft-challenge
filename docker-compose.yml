@@ -1,0 +1,110 @@
+version: '3.9'
+
+services:
+  mongo:
+    image: mongo:7.0
+    container_name: mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    networks:
+      - hypesoft-network
+    volumes:
+      - mongo_data:/data/db
+    env_file:
+      - ./backend/.env
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    healthcheck:
+      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 20s
+      retries: 10
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:24.0.3
+    container_name: keycloak
+    command: start-dev
+    networks:
+      - hypesoft-network
+    env_file:
+      - ./backend/.env
+    environment:
+      KC_DB: mongo
+      KC_DB_URL: mongodb://root:example@mongo:27017/keycloak?authSource=admin
+      KC_DB_USERNAME: root
+      KC_DB_PASSWORD: example
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    ports:
+      - "8080:8080"
+    depends_on:
+      mongo:
+        condition: service_healthy
+    restart: unless-stopped
+
+  backend:
+    build: ./backend
+    container_name: backend
+    networks:
+      - hypesoft-network
+    env_file:
+      - ./backend/.env
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      MONGODB_URI: ${MONGODB_URI}
+      MONGODB_DATABASE: ${MONGODB_DATABASE}
+      MONGODB_COLLECTION: ${MONGODB_COLLECTION}
+    ports:
+      - "5000:5000"
+    depends_on:
+      mongo:
+        condition: service_healthy
+      keycloak:
+        condition: service_started
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    container_name: frontend
+    networks:
+      - hypesoft-network
+    env_file:
+      - ./frontend/.env.local
+    environment:
+      NEXT_PUBLIC_API_URL: http://backend:5000
+      NEXT_PUBLIC_KEYCLOAK_URL: ${NEXT_PUBLIC_KEYCLOAK_URL}
+      NEXT_PUBLIC_KEYCLOAK_REALM: ${NEXT_PUBLIC_KEYCLOAK_REALM}
+      NEXT_PUBLIC_KEYCLOAK_CLIENT_ID: ${NEXT_PUBLIC_KEYCLOAK_CLIENT_ID}
+    ports:
+      - "3000:3000"
+    depends_on:
+      backend:
+        condition: service_started
+      keycloak:
+        condition: service_started
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:1.25
+    container_name: nginx
+    networks:
+      - hypesoft-network
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      frontend:
+        condition: service_started
+      backend:
+        condition: service_started
+    restart: unless-stopped
+
+networks:
+  hypesoft-network:
+    driver: bridge
+
+volumes:
+  mongo_data:
