@@ -1,36 +1,91 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# HypeSoft Challenge - Frontend
 
-## Getting Started
+Este é o frontend do sistema HypeSoft Challenge, desenvolvido com [Next.js](https://nextjs.org), [React](https://react.dev), [TypeScript](https://www.typescriptlang.org/) e [Tailwind CSS](https://tailwindcss.com/). O sistema permite a gestão de produtos, categorias e estoque, com dashboard interativo e suporte a internacionalização (i18n).
 
-First, run the development server:
+## Funcionalidades
+
+- Cadastro, edição e exclusão de produtos
+- Cadastro, edição e exclusão de categorias
+- Filtros por nome e categoria
+- Dashboard com gráficos e cards de resumo
+- Listagem de produtos com estoque baixo
+- Suporte a múltiplos idiomas (Português e Inglês)
+- Integração com backend via API REST
+- UI responsiva e moderna
+
+## Instalação
+
+1. Clone o repositório:
+
+   ```bash
+   git clone https://github.com/Victor-Estrella/hypesoft-challenge.git
+   cd hypesoft-challenge/frontend
+   ```
+
+2. Instale as dependências:
+
+   ```bash
+   npm install
+   # ou
+   yarn install
+   ```
+
+## Executando em modo desenvolvimento
 
 ```bash
 npm run dev
-# or
+# ou
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Acesse [http://localhost:3000](http://localhost:3000) no navegador.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Build para produção
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+npm start
+```
 
-## Learn More
+## Testes
 
-To learn more about Next.js, take a look at the following resources:
+Os testes utilizam [Vitest](https://vitest.dev/) e [Testing Library](https://testing-library.com/):
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npm run test
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Estrutura de Pastas
 
-## Deploy on Vercel
+- `src/app`: Rotas e páginas do Next.js
+- `src/components`: Componentes reutilizáveis
+- `src/types`: Tipos TypeScript
+- `src/hooks`: Hooks customizados
+- `src/i18n`: Internacionalização
+- `src/styles`: Estilos globais
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Configuração de Internacionalização
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Os arquivos de tradução estão em `messages/pt.json` e `messages/en.json`. O idioma padrão é português, mas pode ser alterado pelo usuário.
+
+## Integração com Backend
+
+O frontend consome a API REST do backend em `https://localhost:7159/api`.
+
+## Tecnologias Utilizadas
+
+- Next.js
+- React
+- TypeScript
+- Tailwind CSS
+- Next-Intl (i18n)
+- React Hook Form
+- Zod
+- Recharts
+- Vitest
+
+
+
+---
+
+Desenvolvido para o desafio HypeSoft.

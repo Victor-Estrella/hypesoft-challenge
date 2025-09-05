@@ -36,12 +36,12 @@ export default function DashboardPage() {
     const lowStockProducts = products.filter((p) => (typeof p.stockQuantity === 'number' ? p.stockQuantity : 0) < 10);
 
     return (
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 w-full max-w-6xl mx-auto px-2 md:px-6">
             <div className="space-y-6">
                 <DashboardCards totalProducts={totalProducts} totalStockValue={totalStockValue} lowStockCount={lowStockProducts.length}/>
                 <LowStockProducts products={lowStockProducts} categories={categories} />
             </div>
-            <div className="bg-white rounded-xl shadow p-6 flex flex-col justify-center">
+            <div className="bg-white rounded-xl shadow p-6 flex flex-col justify-center min-h-[300px]">
                 <ProductsByCategoryChart products={products} categories={categories} />
             </div>
         </div>
