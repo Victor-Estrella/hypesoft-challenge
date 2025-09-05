@@ -1,16 +1,14 @@
-version: '3.9'
-
 services:
   mongo:
     image: mongo:7.0
     container_name: mongo
-    restart: unless-stopped
     ports:
       - "27017:27017"
     networks:
       - hypesoft-network
     volumes:
       - mongo_data:/data/db
+    restart: unless-stopped
     env_file:
       - ./backend/.env
     environment:
@@ -26,6 +24,8 @@ services:
     image: quay.io/keycloak/keycloak:24.0.3
     container_name: keycloak
     command: start-dev
+    ports:
+      - "8080:8080"
     networks:
       - hypesoft-network
     env_file:
@@ -37,27 +37,22 @@ services:
       KC_DB_PASSWORD: example
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
-    ports:
-      - "8080:8080"
     depends_on:
       mongo:
         condition: service_healthy
     restart: unless-stopped
 
   backend:
-    build: ./backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
     container_name: backend
+    ports:
+      - "5000:5000"
     networks:
       - hypesoft-network
     env_file:
       - ./backend/.env
-    environment:
-      ASPNETCORE_ENVIRONMENT: Development
-      MONGODB_URI: ${MONGODB_URI}
-      MONGODB_DATABASE: ${MONGODB_DATABASE}
-      MONGODB_COLLECTION: ${MONGODB_COLLECTION}
-    ports:
-      - "5000:5000"
     depends_on:
       mongo:
         condition: service_healthy
@@ -66,19 +61,16 @@ services:
     restart: unless-stopped
 
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
     container_name: frontend
+    ports:
+      - "3000:3000"
     networks:
       - hypesoft-network
     env_file:
       - ./frontend/.env.local
-    environment:
-      NEXT_PUBLIC_API_URL: http://backend:5000
-      NEXT_PUBLIC_KEYCLOAK_URL: ${NEXT_PUBLIC_KEYCLOAK_URL}
-      NEXT_PUBLIC_KEYCLOAK_REALM: ${NEXT_PUBLIC_KEYCLOAK_REALM}
-      NEXT_PUBLIC_KEYCLOAK_CLIENT_ID: ${NEXT_PUBLIC_KEYCLOAK_CLIENT_ID}
-    ports:
-      - "3000:3000"
     depends_on:
       backend:
         condition: service_started
@@ -89,10 +81,10 @@ services:
   nginx:
     image: nginx:1.25
     container_name: nginx
-    networks:
-      - hypesoft-network
     ports:
       - "80:80"
+    networks:
+      - hypesoft-network
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:

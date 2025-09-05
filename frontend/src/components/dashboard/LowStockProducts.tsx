@@ -24,7 +24,7 @@ export function LowStockProducts({ products, categories }: LowStockProductsProps
                                 <span className="font-medium text-gray-800">{p.name}</span>
                                 <span className="ml-2 text-sm text-gray-500">({categories.find(c => c.id === p.category)?.name})</span>
                             </div>
-                            <span className="bg-orange-100 text-orange-700 px-2 py-1 rounded text-xs font-semibold">{p.stock} un.</span>
+                            <span className="bg-orange-100 text-orange-700 px-2 py-1 rounded text-xs font-semibold">{p.stockQuantity} un.</span>
                         </li>
                     ))}
                 </ul>
