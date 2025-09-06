@@ -25,7 +25,7 @@ export function Sidebar() {
             {/* Sidebar responsiva */}
             <aside className={`bg-white border-r shadow-sm flex flex-col fixed top-0 left-0 h-full lg:h-auto w-64 z-40 transition-transform duration-300 md:static md:translate-x-0 ${open ? "translate-x-0" : "-translate-x-full"}`}>
                 <div className="h-20 flex items-center justify-center border-b">
-                    <a href="/" className="font-bold text-xl tracking-tight hover:text-indigo-600 transition-colors">HypeSoft</a>
+                    <a href={`/${locale}/`} className="font-bold text-xl tracking-tight hover:text-indigo-600 transition-colors">HypeSoft</a>
                 </div>
                 <nav className="flex-1 px-4 py-6 space-y-2">
                     <a href={`/${locale}/dashboard`} className="block px-3 py-2 rounded hover:bg-gray-100 font-medium">{t('dashboard')}</a>

@@ -6,40 +6,40 @@ services:
       - "27017:27017"
     networks:
       - hypesoft-network
-    volumes:
-      - mongo_data:/data/db
     restart: unless-stopped
-    env_file:
-      - ./backend/.env
+    # Não precisa de volumes nem variáveis de root, pois usará Atlas
+
+  postgres-keycloak:
+    image: postgres:15
+    container_name: postgres-keycloak
     environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: example
-    healthcheck:
-      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
-      interval: 10s
-      timeout: 20s
-      retries: 10
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: keycloak
+    ports:
+      - "5432:5432"
+    networks:
+      - hypesoft-network
+    restart: unless-stopped
 
   keycloak:
-    image: quay.io/keycloak/keycloak:24.0.3
+    image: quay.io/keycloak/keycloak:17.0.0
     container_name: keycloak
     command: start-dev
     ports:
-      - "8080:8080"
+        - "8080:8080"
     networks:
       - hypesoft-network
-    env_file:
-      - ./backend/.env
     environment:
-      KC_DB: mongo
-      KC_DB_URL: mongodb://root:example@mongo:27017/keycloak?authSource=admin
-      KC_DB_USERNAME: root
-      KC_DB_PASSWORD: example
+      KC_DB: postgres
+      KC_DB_URL_HOST: postgres-keycloak
+      KC_DB_URL_DATABASE: keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: keycloak
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
     depends_on:
-      mongo:
-        condition: service_healthy
+      - postgres-keycloak
     restart: unless-stopped
 
   backend:
@@ -48,14 +48,12 @@ services:
       dockerfile: Dockerfile
     container_name: backend
     ports:
-      - "5000:5000"
+      - "5000:8080"
     networks:
       - hypesoft-network
     env_file:
       - ./backend/.env
     depends_on:
-      mongo:
-        condition: service_healthy
       keycloak:
         condition: service_started
     restart: unless-stopped
@@ -78,25 +76,6 @@ services:
         condition: service_started
     restart: unless-stopped
 
-  nginx:
-    image: nginx:1.25
-    container_name: nginx
-    ports:
-      - "80:80"
-    networks:
-      - hypesoft-network
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
-    depends_on:
-      frontend:
-        condition: service_started
-      backend:
-        condition: service_started
-    restart: unless-stopped
-
 networks:
   hypesoft-network:
     driver: bridge
-
-volumes:
-  mongo_data:

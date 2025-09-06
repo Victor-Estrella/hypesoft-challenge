@@ -62,9 +62,9 @@ export function ProductTable({ products, categories, onEdit, onDelete }: {
             paginatedProducts.map((p) => (
               <tr key={p.id} className="border-b last:border-b-0 hover:bg-gray-50 transition">
                 <td className="px-2 sm:px-4 py-2 font-medium break-words max-w-[120px] xs:max-w-none">{p.name}</td>
-                <td className="px-2 sm:px-4 py-2 text-gray-500 hidden xs:table-cell break-words max-w-[120px] xs:max-w-none">{p.description}</td>
+                <td className="px-2 sm:px-4 py-2 text-gray-500 xs:table-cell break-words max-w-[120px] xs:max-w-none">{p.description}</td>
                 <td className="px-2 sm:px-4 py-2 text-green-700 font-semibold">R$ {p.price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
-                <td className="px-2 sm:px-4 py-2 text-sm hidden xs:table-cell">{categories.find((cat) => cat.id === p.category)?.name}</td>
+                <td className="px-2 sm:px-4 py-2 text-sm xs:table-cell">{categories.find((cat) => cat.id === p.category)?.name}</td>
                 <td className={`px-2 sm:px-4 py-2 font-bold ${p.stockQuantity < 10 ? 'text-orange-600' : 'text-gray-700'}`}>{p.stockQuantity}</td>
                 <td className="px-2 sm:px-4 py-2 flex gap-1 sm:gap-2 flex-col xs:flex-row">
                   <button className="text-indigo-600 hover:underline text-xs sm:text-sm" onClick={() => onEdit(p.id)}>Editar</button>

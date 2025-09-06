@@ -30,7 +30,20 @@ builder.Services.AddHealthChecks();
 
 
 builder.Services.AddSingleton<AppDbContext>();
-builder.Services.Configure<MongoDbSettings>(builder.Configuration.GetSection("MongoDB"));
+builder.Services.Configure<MongoDbSettings>(options =>
+{
+    var section = builder.Configuration.GetSection("MongoDB");
+    section.Bind(options);
+    options.ConnectionURI = string.IsNullOrEmpty(options.ConnectionURI)
+        ? Environment.GetEnvironmentVariable("MONGODB_URI") ?? ""
+        : options.ConnectionURI;
+    options.DatabaseName = string.IsNullOrEmpty(options.DatabaseName)
+        ? Environment.GetEnvironmentVariable("MONGODB_DATABASE") ?? ""
+        : options.DatabaseName;
+    options.CollectionName = string.IsNullOrEmpty(options.CollectionName)
+        ? Environment.GetEnvironmentVariable("MONGODB_COLLECTION") ?? ""
+        : options.CollectionName;
+});
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 
